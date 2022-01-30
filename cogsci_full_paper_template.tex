@@ -15,9 +15,8 @@
 % Modified : Eli M. Silk (esilk@pitt.edu)            05/24/2005
 % Modified : Niels Taatgen (taatgen@cmu.edu)         10/24/2006
 % Modified : David Noelle (dnoelle@ucmerced.edu)     11/19/2014
-% Modified : Roger Levy (rplevy@mit.edu)     12/31/2018
-
-
+% Modified : Roger Levy (rplevy@mit.edu)             12/31/2018
+% Modified : Dae Houlihan (daeda@mit.edu)            01/29/2022
 
 %% Change "letterpaper" in the following line to "a4paper" if you must.
 
@@ -27,9 +26,19 @@
 
 %\cogscifinalcopy % Uncomment this line for the final submission 
 
+\usepackage[
+    backend=biber,
+    style=apa,
+    natbib=true,
+    doi=false,
+    isbn=false,
+    url=false,
+]{biblatex}
+\addbibresource{CogSci_Template.bib}
+\setlength{\bibhang}{.125in}
+% Dae Houlihan replaced the BibTeX, natbib, APA 6th edition bibliography with BibLaTex, biber, APA 7th edition.
 
 \usepackage{pslatex}
-\usepackage{apacite}
 \usepackage{float} % Roger Levy added this and changed figure/table
                    % placement to [H] for conformity to Word template,
                    % though floating tables and figures to top is
@@ -84,7 +93,7 @@ semicolon; between each term
 
 \section{General Formatting Instructions}
 
-The entire content of a paper (including figures, references, and anything else) can be no longer than six pages in the \textbf{initial submission}. In the \textbf{final submission}, the text of the paper, including an author line, must fit on six pages. Up to one additional page can be used for acknowledgements and references.
+The entire content of a paper (including figures and anything else) can be no longer than six pages in the \textbf{initial submission}. In the \textbf{final submission}, the text of the paper, including an author line, must fit on six pages. An unlimited number of pages can be used for acknowledgements and references.
 
 The text of the paper should be formatted in two columns with an
 overall width of 7 inches (17.8 cm) and length of 9.25 inches (23.5
@@ -138,11 +147,11 @@ heading.
 Use standard APA citation format. Citations within the text should
 include the author's last name and year. If the authors' names are
 included in the sentence, place only the year in parentheses, as in
-\citeA{NewellSimon1972a}, but otherwise place the entire reference in
+\citet{NewellSimon1972a}, but otherwise place the entire reference in
 parentheses with the authors and year separated by a comma
-\cite{NewellSimon1972a}. List multiple references alphabetically and
+\citep{NewellSimon1972a}. List multiple references alphabetically and
 separate them by semicolons
-\cite{ChalnickBillman1988a,NewellSimon1972a}. Use the
+\citep{ChalnickBillman1988a,NewellSimon1972a}. Use the
 ``et~al.'' construction only after listing all the authors to a
 publication in an earlier reference and for citations with four or
 more authors.
@@ -239,12 +248,7 @@ edited volume, respectively.
 \nocite{ShragerLangley1990a}
 
 
-\bibliographystyle{apacite}
-
-\setlength{\bibleftmargin}{.125in}
-\setlength{\bibindent}{-\bibleftmargin}
-
-\bibliography{CogSci_Template}
+\printbibliography 
 
 
 \end{document}
