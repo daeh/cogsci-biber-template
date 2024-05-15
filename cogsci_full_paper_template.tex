@@ -16,7 +16,7 @@
 % Modified : Niels Taatgen (taatgen@cmu.edu)         10/24/2006
 % Modified : David Noelle (dnoelle@ucmerced.edu)     11/19/2014
 % Modified : Roger Levy (rplevy@mit.edu)             12/31/2018
-% Modified : Dae Houlihan (daeda@mit.edu)            01/29/2022
+% Modified : Dae Houlihan (daeda@mit.edu)            11/25/2022
 
 %% Change "letterpaper" in the following line to "a4paper" if you must.
 
@@ -27,16 +27,22 @@
 %\cogscifinalcopy % Uncomment this line for the final submission 
 
 \usepackage[
-    backend=biber,
-    style=apa,
-    natbib=true,
-    doi=false,
-    isbn=false,
-    url=false,
+  colorlinks=false,
+  citecolor=black
+]{hyperref}
+\usepackage[
+  backend=biber,
+  style=apa,
+  natbib=true,
+  doi=true,
+  url=false,
+  eprint=true,
+  isbn=true,
+  annotation=false,
 ]{biblatex}
 \addbibresource{CogSci_Template.bib}
 \setlength{\bibhang}{.125in}
-% Dae Houlihan replaced the BibTeX, natbib, APA 6th edition bibliography with BibLaTex, biber, APA 7th edition.
+% Dae Houlihan replaced the BibTeX, natbib, APA 6th edition bibliography with BibLaTeX, biber, APA 7th edition.
 
 \usepackage{pslatex}
 \usepackage{float} % Roger Levy added this and changed figure/table
