@@ -66,3 +66,15 @@ Once again, make sure that you adhere to the general formatting
 instructions, including that there are at least 2.75 inches between
 the top of page 1 and the start of the abstract and text.
 
+## Bibliography System
+
+This template uses **BibLaTeX with Biber backend** and follows **APA 7th edition**
+style guidelines. This is an upgrade from the older BibTeX/natbib system with
+APA 6th edition.
+
+**For LaTeX users:**
+- Bibliography entries go in `CogSci_Template.bib`
+- The template is configured to use `\cite{}`, `\citet{}`, and `\citep{}` commands
+- Compile with: `pdflatex` → `biber` → `pdflatex` → `pdflatex`
+- Or use `latexmk -pdf` to handle the compilation automatically
+

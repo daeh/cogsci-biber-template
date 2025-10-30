@@ -1,5 +1,3 @@
-%% Copyright 2022 Philip Kime
-%%
 %% This work may be distributed and/or modified under the
 %% conditions of the LaTeX Project Public License, either version 1.3
 %% of this license or (at your option) any later version.
@@ -12,7 +10,7 @@
 %%
 %% The Current Maintainer of this work is Philip Kime.
 
-\ProvidesFile{apa.bbx}[2021/12/24\space v9.15\space APA biblatex references style]
+\ProvidesFile{apa.bbx}[2025/08/27\space v9.20\space APA biblatex references style]
 \RequireBiber[3]
 \RequireBibliographyStyle{standard}
 \urlstyle{same} % APA examples all have URLs in same font as text
@@ -129,11 +127,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Force roman numerals into arabic using
-% etoolbox macros
-
-\newcommand{\apanum}[1]{\ifrmnum{#1}{\rmntonum{#1}}{#1}}
-
+% This does nothing currently
+\newcommand{\apanum}[1]{#1}
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -157,37 +152,42 @@
                      or test {\ifentrytype{legal}}
                      or ( test {\ifentrytype{legadminmaterial}} and
                           test {\ifkeyword{proposed}} ) }
-         {\printtext{%
-             \mkbibdateapalongmdy{#1year}{#1month}{#1day}%
+         {\printtext[#1date]{%
+             \mkbibdateapalongmdy{#1year}{#1yeardivision}{#1month}{#1day}%
              \iffieldundef{#1endyear}%
                {}%
                {\iffieldequalstr{#1endyear}{}% open-ended range?
                  {\bibdatedash\bibstring{present}}
-                 {\bibdatedash%
-                  \iffieldsequal{#1year}{#1endyear}%
-                    {\iffieldsequal{#1month}{#1endmonth}%
-                      {\iffieldsequal{#1day}{#1endday}%
-                        {}%
-                        {\mkbibdateapalongmdy{}{}{#1endday}}}%
-                      {\mkbibdateapalongmdy{}{#1endmonth}{#1endday}}}%
-                    {\mkbibdateapalongmdy{#1endyear}{#1endmonth}{#1endday}}}}%
+                 {\iffieldundef{#1endyeardivision}
+                   {\bibdatedash%
+                    \iffieldsequal{#1year}{#1endyear}%
+                      {\iffieldsequal{#1month}{#1endmonth}%
+                        {\iffieldsequal{#1day}{#1endday}%
+                          {}%
+                          {\mkbibdateapalongmdy{}{}{}{#1endday}}}%
+                        {\mkbibdateapalongmdy{}{}{#1endmonth}{#1endday}}}%
+                      {\mkbibdateapalongmdy{#1endyear}{#1endyeardivision}{#1endmonth}{#1endday}}}}
+                   {\addslash\mkbibdateapalongmdy{}{#1endyeardivision}{}{}}}%
              \dateuncertainprint}}
          {\printtext{%
-             \mkbibdateapalong{#1year}{#1month}{#1day}%
+             \mkbibdateapalong{#1year}{#1yeardivision}{#1month}{#1day}%
              \dateeraprint{#1year}%
+             \dateuncertainprint
              \iffieldundef{#1endyear}%
                {}%
                {\iffieldequalstr{#1endyear}{}% open-ended range?
                  {\bibdatedash\bibstring{present}}
-                 {\bibdatedash%
-                  \iffieldsequal{#1year}{#1endyear}%
-                    {\iffieldsequal{#1month}{#1endmonth}%
-                      {\iffieldsequal{#1day}{#1endday}%
-                        {}%
-                        {\mkbibdateapalong{}{}{#1endday}}}%
-                      {\mkbibdateapalong{}{#1endmonth}{#1endday}}}%
-                    {\mkbibdateapalong{#1endyear}{#1endmonth}{#1endday}%
-                   \dateeraprint{#1endyear}}}%
+                 {\iffieldundef{#1endyeardivision}
+                   {\bibdatedash%
+                    \iffieldsequal{#1year}{#1endyear}%
+                      {\iffieldsequal{#1month}{#1endmonth}%
+                        {\iffieldsequal{#1day}{#1endday}%
+                          {}%
+                          {\mkbibdateapalong{}{}{}{#1endday}}}%
+                        {\mkbibdateapalong{}{}{#1endmonth}{#1endday}}}%
+                      {\mkbibdateapalong{#1endyear}{#1endyeardivision}{#1endmonth}{#1endday}%
+                        \dateeraprint{#1endyear}}}
+                   {\addslash\mkbibdateapalong{}{#1endyeardivision}{}{}}}%
                \enddateuncertainprint}}}}%
   \endgroup}
 
@@ -196,24 +196,26 @@
   \begingroup
     \blx@metadateinfo{#1}%
     \iffieldundef{#1year}{}
-      {\printtext{%
+      {\printtext[#1date]{%
         \datecircaprint
-        \mkbibdateapalongextra{#1year}{#1month}{#1day}%
+        \mkbibdateapalongextra{#1year}{#1yeardivision}{#1month}{#1day}%
         \dateeraprint{#1year}%
         \dateuncertainprint
         \iffieldundef{#1endyear}%
-          {}%
+          {}
           {\iffieldequalstr{#1endyear}{}% open-ended range?
             {\bibdatedash\bibstring{present}}
-            {\bibdatedash%
-             \iffieldsequal{#1year}{#1endyear}%
-               {\iffieldsequal{#1month}{#1endmonth}%
-                  {\iffieldsequal{#1day}{#1endday}%
-                    {}%
-                    {\mkbibdateapalongextra{}{}{#1endday}}}
-                  {\mkbibdateapalongextra{}{#1endmonth}{#1endday}}}
-               {\mkbibdateapalongextra{#1endyear}{#1endmonth}{#1endday}%
-                \dateeraprint{#1endyear}}}%
+            {\iffieldundef{#1endyeardivision}
+              {\bibdatedash%
+               \iffieldsequal{#1year}{#1endyear}%
+                 {\iffieldsequal{#1month}{#1endmonth}%
+                    {\iffieldsequal{#1day}{#1endday}%
+                      {}%
+                      {\mkbibdateapalongextra{}{}{}{#1endday}}}
+                    {\mkbibdateapalongextra{}{}{#1endmonth}{#1endday}}}
+                 {\mkbibdateapalongextra{#1endyear}{#1endyeardivision}{#1endmonth}{#1endday}%
+                   \dateeraprint{#1endyear}}}
+              {\addslash\mkbibdateapalongmdy{}{#1endyeardivision}{}{}}}%
            \enddateuncertainprint}}}%
   \endgroup}
 
@@ -226,8 +228,8 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % (APA 8.12) sort citations
-% (APA 8.17) More than two authors is truncated to one but overriden for list ambiguity to
-%            point of no ambiguity
+% (APA 8.17,8.18) More than two authors is truncated to one but overriden for list ambiguity to
+%                 point of no ambiguity but only when same year.
 % (APA 8.20) Use initials to disambiguate shared surnames
 % (APA 8.19) Use year postfix to disambiguate multiple items in same year
 % (APA 9.44, 9.46, 9.47) Sorting is nyt but we need to account for PUBSTATE which comes
@@ -235,6 +237,25 @@
 % (APA 9.42) Secular Before Common Era dates, approximate dates
 % (APA Figure 9.2) Sorting ignores punctuation in names
 % (APA 9.47) Ignore "The", "An" and "A" when sorting titles
+
+% Used for sorting citations with biblatex option "sortcites" as this needs to use
+% the silly APA standards for name list visibility (8.17, 8.18) in cites which differs from the reference list.
+\DeclareSortingNamekeyTemplate[apasortcite]{
+  \visibility{cite}
+  \keypart{
+    \namepart[use=true]{prefix}
+    \namepart{family}
+  }
+  \keypart{
+    \namepart{given}
+  }
+  \keypart{
+    \namepart{suffix}
+  }
+  \keypart{
+    \namepart[use=false]{prefix}
+  }
+}
 
 \DeclareNosort{
   \nosort{setnames}{\regexp{\p{General_Category=Punctuation}}}
@@ -261,14 +282,17 @@
   \sort{
     \field{sortyear}
     \field{year}
+    \field{eventyear}
     \literal{-2000000000}% APA has "nodates" coming first
   }
   \sort{
     \field{month}
+    \field{eventmonth}
     \literal{-2000000000}% APA has "nodates" coming first
   }
   \sort{
     \field{day}
+    \field{eventday}
     \literal{-2000000000}% APA has "nodates" coming first
   }
   \sort{
@@ -281,11 +305,22 @@
   }
 }
 
+% Don't sort on EDITOR for INBOOK (IN* since IN* is mapped to INBOOK) as TITLE is used in place of author
+% if there is no AUTHOR
+\DeclareSortExclusion{inbook}{editor}
+
 \DeclareLabelname{%
   \field{shortauthor}
   \field{author}
   \field{shorteditor}
   \field{editor}
+}
+
+% Don't use EDITOR as labelname in INBOOK (IN* since IN* is mapped to INBOOK) as citations should be
+% via TITLE if there is no AUTHOR
+\DeclareLabelname[inbook]{%
+  \field{shortauthor}
+  \field{author}
 }
 
 % Don't fall back on other year fields if there is no year, use
@@ -311,6 +346,7 @@
                             datecirca=true,%
                             dateera=secular,%
                             dateuncertain=true,%
+                            datezeros=false,%
                             eventdate=comp,%
                             labeldate=apalong,%
                             labeldateparts=true,%
@@ -322,6 +358,7 @@
                             maxitems=999,%
                             origdate=apalong,%
                             pagetracker=true,%
+                            pluralothers=true,%
                             sortcites=true,%
                             sorting=apa,%
                             uniquelist=minyear,%
@@ -332,7 +369,35 @@
                             usetranslator=true,%
                             usenarrator=true}
 
+
+% It's not completely obvious but it's implied that names identical apart from a suffix
+% are to be treated as different name lists for extradate calculation so we add suffix
+% to the default definition
+\DeclareUniquenameTemplate{
+  \namepart[use=true, base=true]{prefix}
+  \namepart[base=true]{family}
+  \namepart{given}
+  \namepart{suffix}
+}
+
+% Force, in every refsection, the generation of refcontext data with a
+% sorting name key template which works for citation sorting with sortcites. This
+% would not be generated in the .bcf otherwise and therefore no sorted list
+% with this sorting name key tenplate would generated in teh .bbl by biber because no
+% \printbibliography would be executed in this context since it is only
+% used for sorting of citations truncated to one name as per 8.17/8.18.
 %
+% Two things needs to happen in general:
+% 1. Generate the refcontext sorted data list in the .bbl (biber) which requires a datalist
+%    section in the .bcf. This latter is done by \printbibliography/\printbiblist or \GenRefcontextData
+%    when no \printbibliography/\printbiblist is done in the refcontext 
+% 2. Switch to the relevant refcontext at the right time in order to pull the date from the
+%    correct data list (\newrefcontext/\begin{refcontext})
+\AtBeginRefsection{\GenRefcontextData{sortingnamekeytemplatename=apasortcite}}
+% Switch to the reference context using citation visibility setting for sorting of citations
+\AtEveryCite{\localrefcontext[sortingnamekeytemplatename=apasortcite]}
+
+% 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Enforce ignoring of PUBSTATE if there is a YEAR or DATE field
@@ -367,6 +432,7 @@
     \map{
       \pertype{inproceedings}
       \step[notfield=editor, final]
+      \step[notfield=crossref, final]% A bit suspect but assuming that any crossref contains EDITOR
       \step[fieldsource=booktitle, fieldtarget=journaltitle]
       \step[typesource=inproceedings, typetarget=article]
     }
@@ -394,8 +460,20 @@
 % been placed already in IN*
 % Reset every bibitem.
 
-\newbool{bbx:in}
-\AtEveryBibitem{\global\boolfalse{bbx:in}}
+\newbool{bbx@in}
+\AtEveryBibitem{\global\boolfalse{bbx@in}}
+
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Flag to say whether editors were present
+% and have been printed already (as they are
+% cleared)
+% Reset every bibitem.
+
+\newbool{bbx@doneed}
+\AtEveryBibitem{\global\boolfalse{bbx@doneed}}
 
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -427,7 +505,7 @@
 \DeclareFieldFormat{maintitleaddon}{\mkbibbrackets{\bbx@colon@search\MakeSentenceCase*{#1}}}
 
 % NOTE
-\DeclareFieldFormat[legmaterial,legadminmaterial]{note}{\mkbibparens{#1}}
+\DeclareFieldFormat[legmaterial,legadminmaterial,report]{note}{\mkbibparens{#1}}
 
 % BOOKTITLEADDON
 \DeclareFieldFormat{booktitleaddon}{\mkbibbrackets{\bbx@colon@search\MakeSentenceCase*{#1}}}
@@ -451,13 +529,12 @@
 \DeclareFieldFormat{volumes}{\bibcpstring{volumes}~#1}
 
 % CHAPTER
-
 \DeclareFieldFormat{chapter}{\bibcpstring{chapter}~\apanum{#1}}
 
 % NUMBER
 \DeclareFieldFormat{number}{\iffieldundef{volume}
-                             {\ifinteger{\thefield{number}}
-                               {\addspace\mkbibemph{\bibcpstring{number}~\apanum{#1}}\adddot}
+                             {\iffieldint{number}
+                               {\bibcpstring{number}~\apanum{#1}}
                                {\apanum{#1}}}
                              {\mkbibemph{\apanum{#1}}}}
 \DeclareFieldFormat[report]{number}{\apanum{#1}}
@@ -467,7 +544,8 @@
   \ifthenelse{%
     \iffieldequalstr{type}{report}\OR%
     \iffieldequalstr{type}{execorder}}{\bibcpstring{number}~\apanum{#1}}{\apanum{#1}}}
-
+\DeclareFieldFormat[thesis]{number}{%
+  \bibcpstring{publication}\setunit{\addspace}\bibcpstring{number}~\apanum{#1}}
 
 % PAGES
 \DeclareFieldFormat{pageswithprefix}{\mkpageprefix[bookpagination]{#1}}
@@ -478,16 +556,28 @@
 \DeclareFieldFormat*{part}{#1}
 
 % ORGANIZATION
-\DeclareListFormat[misc]{organization}{\mkbibemph{#1}}
+\DeclareListFormat[misc]{organization}{%
+  \usebibmacro{organization:delim}%
+  \mkbibemph{#1}\isdot}
+
+\newbibmacro*{organization:delim}{%
+  \ifnumgreater{\value{listcount}}{\value{liststart}}
+    {\printdelim[organization]{multilistdelim}}
+    {}}
+
+\DeclareDelimFormat[organization]{multilistdelim}{\addcomma\space}
+
 
 % LOCATION
-\DeclareListFormat[periodical]{location}{\mkbibemph{#1}}
 \DeclareListFormat{publisher}{%
-  \usebibmacro{publisher:delim}{#1}%
+  \usebibmacro{publisher:delim}%
   #1\isdot}
 \DeclareListFormat{location}{%
-  \usebibmacro{location:delim}{#1}%
+  \usebibmacro{location:delim}%
   #1\isdot}
+\DeclareListFormat[periodical]{location}{%
+  \usebibmacro{location:delim}%
+  \mkbibemph{#1}\isdot}
 
 % NAMEADDON
 \DeclareFieldFormat[misc]{nameaddon}{\mkbibparens{#1}}
@@ -495,10 +585,6 @@
 % VERSION
 \DeclareFieldFormat[dataset,software]{version}{\bibcpstring{version}~#1}
 \DeclareFieldFormat[online]{version}{\mkbibparens{#1}}
-
-% URL
-\DeclareFieldFormat{url}{\url{#1}}
-\DeclareFieldFormat{urldate}{#1}
 
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -521,16 +607,6 @@
 %     max/minnames truncation is done before calling the format so we have
 %     to do \printnames[format][-\value{listtotal}]{field} to ensure we get
 %     all of the names in the list to work on
-
-% It's not completely obvious but it's implied that names identical apart from a suffix
-% are to be treated as different name lists for extradate calculation so we add suffix
-% to the default definition
-\DeclareUniquenameTemplate{
-  \namepart[use=true, base=true]{prefix}
-  \namepart[base=true]{family}
-  \namepart{given}
-  \namepart{suffix}
-}
 
 \DeclareNameAlias{default}{apaauthor}
 
@@ -575,11 +651,11 @@
     {}}
 
 \DeclareDelimFormat[bib,biblist]{nameyeardelim}{\newunitpunct}
-\DeclareDelimAlias*[bib,biblist]{nonameyeardelim}{nameyeardelim}
+\DeclareDelimAlias[bib,biblist]{nonameyeardelim}{nameyeardelim}
 
 \renewbibmacro*{author/editor}{%
   \ifnameundef{author}
-    {\ifnameundef{editor}
+    {\ifthenelse{\ifnameundef{editor}\OR\ifentrytype{inbook}}
       {\usebibmacro{title}%
        % need to clear all title fields so we don't get them again later
        \clearfield{title}%
@@ -595,7 +671,7 @@
 
 \newbibmacro*{author/editor:related}{%
   \ifnameundef{author}
-    {\ifnameundef{editor}
+    {\ifthenelse{\ifnameundef{editor}\OR\ifentrytype{inbook}}
       {\usebibmacro{title}%
         % need to clear all title fields so we don't get them again later
         \clearfield{title}%
@@ -730,7 +806,8 @@
         \setunit{\subtitlepunct}%
         \printfield[apacase]{subtitle}}}%
      \setunit{\addspace}%
-     \ifentrytype{inbook}{}{\usebibmacro{addinfo1}}% additional info in parens
+     \ifthenelse{\ifentrytype{inbook}\OR\ifentrytype{thesis}}{}{\usebibmacro{addinfo1}}% additional info in parens
+     \ifentrytype{thesis}{\usebibmacro{addinfo3}}{}%
      \setunit{\addspace}%
      \printfield{titleaddon}%
      \setunit{\addspace}%
@@ -743,7 +820,6 @@
     \printfield{edition}%
     \setunit*{\addcomma\addspace}%
     \ifthenelse{\ifentrytype{report}\OR%
-                \ifentrytype{thesis}\OR%
                 \ifentrytype{unpublished}\OR%
                 \ifentrytype{dataset}\OR%
                 \ifentrytype{software}\OR%
@@ -753,9 +829,11 @@
     \setunit*{\addcomma\addspace}%
     \ifentrytype{inbook}{\printfield{pages}}{}%
     \setunit*{\addcomma\addspace}%
-    \ifentrytype{book}{\printfield{volumes}}{}%
-    \setunit*{\addcomma\addspace}%
-    \ifentrytype{book}{\printfield{volume}}{}}}
+    \iffieldundef{maintitle}
+      {\ifthenelse{\ifentrytype{book}\OR\ifentrytype{inbook}}{\printfield{volumes}}{}%
+       \setunit*{\addcomma\addspace}%
+       \ifthenelse{\ifentrytype{book}\OR\ifentrytype{inbook}}{\printfield{volume}}{}}
+      {}}}
 
 % Additional post title information in brackets unless it's the meta subtype "nonacademic"
 % which is used to conditionalise date formats in the .lbx files
@@ -767,22 +845,33 @@
         {\bibcplstring{\thefield{entrysubtype}}}
         {\printfield{entrysubtype}}}%
     \setunit*{\addsemicolon\addspace}%
-    \printfield{note}}}
+    \ifentrytype{report}{}{\printfield{note}}}}
 
 % number/issue information
 \newbibmacro*{addinfo3}{%
-  \iffieldundef{type}
-    {\iffieldundef{issue}
-      {\iffieldnums{number}{\bibcpstring{number}~}{}\printfield{number}}
-      {\printfield{issue}\setunit{\addspace}%
-       \iffieldundef{number}
-         {}
-         {\iffieldnums{number}{\bibcpstring{number}~}{}\printfield{number}}}}
-    {\printfield{type}\setunit{\addspace}%
-     \iffieldundef{number}
+  \ifentrytype{thesis}
+    {\iffieldundef{number}
+      {}
+      {\printtext[parens]{\printfield{number}}}%
+     \setunit{\addspace}%
+     \iffieldundef{type}
        {}
-       {\iffieldnums{number}{\bibcpstring{number}~}{}\printfield{number}}}%
-  \ifthenelse{\ifentrytype{dataset}\OR\ifentrytype{software}}
+       {% Inconsistent - standard thesis types have institution inside the brackts, manual types outside ...
+        \ifthenelse{\iffieldequalstr{type}{phdthesis}\OR\iffieldequalstr{type}{mathesis}}
+          {\printtext[brackets]{\printfield{type}\setunit*{\addcomma\addspace}\printlist{institution}}}
+          {\printtext[brackets]{\printfield{type}}\setunit*{\adddot\addspace}\printlist{institution}}}}
+    {\iffieldundef{type}
+       {\iffieldundef{issue}
+         {\printfield{number}}
+         {\printfield{issue}\setunit{\addspace}%
+          \iffieldundef{number}
+            {}
+            {\printfield{number}}}}
+       {\printfield{type}\setunit{\addspace}%
+        \iffieldundef{number}
+          {}
+          {\bibcpstring{number}~\printfield{number}}}}% Inconsistent - numbers after type aren't necessarily numbers ...
+   \ifthenelse{\ifentrytype{dataset}\OR\ifentrytype{software}}
     {\setunit*{\addsemicolon\addspace}%
      \printfield{version}}
     {}}
@@ -831,9 +920,9 @@
 % than one potential location
 
 \newbibmacro*{in}{%
-  \ifbool{bbx:in}%
+  \ifbool{bbx@in}%
     {}%
-    {\global\booltrue{bbx:in}%
+    {\global\booltrue{bbx@in}%
      \bibcpstring{in}\setunit{\space}}}
 
 %
@@ -1080,6 +1169,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Special journal issues are periodicals
 
+\newbibmacro*{periodical:delim}{%
+  \ifnumgreater{\value{listcount}}{\value{liststart}}
+    {\printdelim[periodical]{multilistdelim}}
+    {}}
+ 
 \renewbibmacro*{periodical}{%
   \iffieldundef{title}
     {}
@@ -1133,10 +1227,9 @@
     {\iffieldundef{maintitle}
       {}
       {\usebibmacro{maintitle}%
-       \newunit\newblock
        \iffieldundef{volume}
-         {}
-         {\printfield{volume}%
+         {\newunit\newblock}
+         {\setunit{\addcolon\space}\printfield{volume}%
           \printfield{part}%
           \setunit{\adddot\space}}}}%
   \usebibmacro{title}%
@@ -1145,22 +1238,22 @@
 \renewbibmacro*{maintitle+booktitle}{%
   \ifthenelse{\iffieldundef{maintitle}\AND\iffieldundef{booktitle}}
     {}
-    {\ifthenelse{\ifnameundef{editor}\AND
-                 \ifnameundef{editora}\AND
-                 \ifnameundef{editorb}\AND
-                 \ifnameundef{editorc}}{\usebibmacro{in}}{}%
+    {\ifbool{bbx@doneed}
+        {\setunit{\addcomma\addspace}}
+        {\usebibmacro{in}%
+          \setunit{\addspace}}%
      \iffieldundef{maintitle}
       {}
       {\usebibmacro{maintitle}%
        \newunit\newblock
        \iffieldundef{volume}
          {}
-         {\printfield{volume}%
+         {\setunit{\addcolon\space}\printfield{volume}%
           \printfield{part}%
           \setunit{\adddot\addspace}}}%
-      \usebibmacro{booktitle}%
-      \setunit{\addspace}%
-      \usebibmacro{addinfo1}}}
+     \usebibmacro{booktitle}%
+     \setunit{\addspace}%
+     \usebibmacro{addinfo1}}}
 
 \renewbibmacro*{maintitle}{%
   \ifthenelse{\iffieldundef{maintitle}\AND\iffieldundef{mainsubtitle}}
@@ -1197,7 +1290,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % (APA 10.2.24) Multiple publishers, semi-colon sep
 
-\newbibmacro*{publisher:delim}[1]{%
+\newbibmacro*{publisher:delim}{%
   \ifnumgreater{\value{listcount}}{\value{liststart}}
     {\printdelim[publisher]{multilistdelim}}
     {}}
@@ -1268,7 +1361,9 @@
 
 \newbibmacro*{mainaudio}{%
   \iffieldundef{maintitle}{}
-    {\iffieldequalstr{entrysubtype}{podcastepisode}{\bibcpstring{in}}{\bibcpstring{on}}%
+    {\ifthenelse{\iffieldequalstr{entrysubtype}{podcastepisode}\OR\iffieldequalstr{entrysubtype}{videopodcastepisode}}
+       {\bibcpstring{in}}
+       {\bibcpstring{on}}%
      \setunit{\addspace}%
      \printfield{maintitle}}}
 
@@ -1284,7 +1379,9 @@
     {\usebibmacro{in}%
      \printnames[apanames][-\value{listtotal}]{execproducer}%
      \setunit{\addspace}%
-     \bibcplstring[\mkbibparens]{execproducers}%
+     \ifthenelse{\the\c@execproducer=1}%
+       {\bibcplstring[\mkbibparens]{execproducer}}
+       {\bibcplstring[\mkbibparens]{execproducers}}%
      \setunit{\addcomma\addspace}%
      \printfield{maintitle}}}
 
@@ -1351,18 +1448,37 @@
        \setunit{\addcomma\addspace}%
        \usebibmacro{doi+url}%
        \setunit{}}
-   {\ifentrytype{book}
+   {\ifthenelse{\ifentrytype{book}\OR\ifentrytype{inbook}}
       {\mkbibemph{%
-         \printfield[apacase]{title}%
-         \setunit{\subtitlepunct}%
-         \printfield[apacase]{subtitle}}%
+         \iffieldundef{booktitle}
+           {\iffieldundef{title}
+             {}
+             {\printfield[apacase]{title}%
+              \setunit{\subtitlepunct}%
+              \printfield[apacase]{subtitle}}}
+           {\printfield[apacase]{booktitle}%
+            \setunit{\subtitlepunct}%
+            \printfield[apacase]{booksubtitle}}}%
        \setunit{\addcomma\addspace}%
        \printfield[pageswithprefix]{pages}%
        \setunit{\addcomma\addspace}%
-       \biblstring{byauthor}\space
-       \printnames[apanames][-\value{listtotal}]{editor}%
-       \setunit{\addcomma\addspace}%
-       \usebibmacro{apaeditorstrg}{editor}%
+       \ifthenelse{\ifnameundef{author}\OR%
+                   \ifnamesequal{author}{savedauthor}}
+         {}
+         {\biblstring{byauthor}\space%
+          \printnames[apanames][-\value{listtotal}]{author}%
+          \setunit{\addcomma\addspace}}%
+       \ifthenelse{\ifnameundef{editor}}
+         {}
+         {\biblstring{byauthor}\space%
+          \printnames[apanames][-\value{listtotal}]{editor}%
+          \setunit{\addcomma\addspace}%
+          \usebibmacro{apaeditorstrg}{editor}}%
+       \ifthenelse{\ifnameundef{translator}}
+         {}
+         {\printnames[apanames][-\value{listtotal}]{translator}%
+          \setunit{\addcomma\addspace}%
+          \bibcpstring{translator}}%
        \setunit{\addcomma\addspace}%
        \printlabeldateextra
        \setunit{\addcomma\addspace}%
@@ -1383,24 +1499,22 @@
   \settoggle{bbx:annotation}{#1}}
 \ExecuteBibliographyOptions{annotation=true}
 
+\long\def\blxapa@appunit#1{%
+  \iftoggle{blx@keepunit}
+    {}
+    {\gappto\blx@unitpunct{#1}%
+     \global\toggletrue{blx@unit}}}
+
 \renewbibmacro*{annotation}{%
-  \ifboolexpr{test {\iffieldundef{annotation}}
-              or not togl {bbx:annotation}}
-    {\IfFileExists{\bibannotationprefix\thefield{entrykey}.tex}
-       {\begingroup
-        \togglefalse{blx@bibliography}%
-        \newline
-        \setunit{}%
-        \printfile[annotation]{\bibannotationprefix\thefield{entrykey}.tex}%
-        \endgroup}
-      {}}
+  \iftoggle{bbx:annotation}
     {\begingroup
      \togglefalse{blx@bibliography}%
-     \newline
-     \setunit{}%
-     \printfield{annotation}%
-     \endgroup}}
-
+     \blxapa@appunit{\newline}%
+     \iffieldundef{annotation}
+       {\printfile[annotation]{\bibannotationprefix\thefield{entrykey}.tex}}
+       {\printfield{annotation}}%
+     \endgroup}
+    {}}
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1441,9 +1555,9 @@
 
 \newbibmacro*{statdate}{%
   \iffieldundef{origyear}
-    {\printtext[parens]{\printlabeldate}}
+    {\printtext[parens]{\printlabeldateextra}}
     {\printtext[parens]{\printorigdate%
-                        \addspace\&\addspace rev\adddot\addspace\printlabeldate}}}
+                        \addspace\&\addspace rev\adddot\addspace\printlabeldateextra}}}
 
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1451,7 +1565,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % (APA 11.6) Legislative Material and Admin Material
 
-\newbibmacro*{location:delim}[1]{%
+\newbibmacro*{location:delim}{%
   \ifnumgreater{\value{listcount}}{\value{liststart}}
     {\printdelim[location]{multilistdelim}}
     {}}
@@ -1486,7 +1600,7 @@
   \usebibmacro{bibindex}%
   \usebibmacro{begentry}%
   \usebibmacro{author/editor}%
-  \setunit{\printdelim{nametitledelim}}\newblock
+  \printunit{\printdelim{nametitledelim}}\newblock
   \usebibmacro{title}%
   \setunit{\addspace}\newblock
   \usebibmacro{apa:related}%
@@ -1904,6 +2018,8 @@
   \setunit{\printdelim{nametitledelim}}\newblock
   \usebibmacro{title}%
   \setunit{\addspace}\newblock
+  \printfield{note}%
+  \setunit{\addspace}\newblock
   \usebibmacro{apa:related}%
   \newunit\newblock
   \printlist{institution}%
@@ -1951,9 +2067,7 @@
   \setunit{\printdelim{nametitledelim}}\newblock
   \usebibmacro{title}%
   \newunit\newblock
-  \printlist{institution}%
-  \newunit\newblock
-  \usebibmacro{location+publisher}%
+  \printlist{publisher}%
   \newunit\newblock
   \usebibmacro{doi+url}%
   \newunit\newblock
@@ -2032,6 +2146,7 @@
      \setunit{\addspace}%
      \printtext[parens]{\usebibmacro{apaeditorstrg}{editor}}
      \clearname{editor}%
+     \booltrue{bbx@doneed}%
      \newunit}%
   \ifnameundef{editora}
     {}
@@ -2039,6 +2154,7 @@
      \setunit{\addspace}%
      \printtext[parens]{\usebibmacro{apaeditorstrg}{editora}}
      \clearname{editora}%
+     \booltrue{bbx@doneed}%
      \newunit}%
   \ifnameundef{editorb}
     {}
@@ -2046,6 +2162,7 @@
      \setunit{\addspace}%
      \printtext[parens]{\usebibmacro{apaeditorstrg}{editorb}}
      \clearname{editorb}%
+     \booltrue{bbx@doneed}%
      \newunit}%
   \ifnameundef{editorc}
     {}
@@ -2053,6 +2170,7 @@
      \setunit{\addspace}%
      \printtext[parens]{\usebibmacro{apaeditorstrg}{editorc}}
      \clearname{editorc}%
+     \booltrue{bbx@doneed}%
      \newunit}}
 
 \newbibmacro*{apaeditorstrg}[1]{%
@@ -2061,14 +2179,27 @@
        {\bibcpstring{editors}}
        {\bibcpstring{editor}}}
     {\ifthenelse{\value{#1}>1\OR\ifandothers{#1}}
-         {\bibcpstring{type\thefield{#1type}s}}
-         {\bibcpstring{type\thefield{#1type}}}}}
+         {\bibcpstring{\thefield{#1type}s}}
+         {\bibcpstring{\thefield{#1type}}}}}
 
 
 
-%(APA 9.35) No periods after URLS
+%(APA 9.35) No periods after URLS and DOIs
 % we'll override a global url option for for @online entries
 \ExecuteBibliographyOptions[online]{url=true}
+
+\DeclareFieldFormat{doi}{%
+  \ifhyperref
+    {\href{https://doi.org/#1}{\nolinkurl{https://doi.org/#1}}}
+    {\nolinkurl{https://doi.org/#1}}%
+  \nopunct}
+
+\DeclareFieldFormat{url}{\url{#1}\nopunct}
+
+\DeclareFieldFormat{urldate}{%
+  \bibstring{retrieved}\space#1%
+  \urldatecomma\bibstring{from}}
+
 \newbibmacro*{doi+url}{%
   \ifboolexpr{          test {\iffieldundef{doi}}
                  or not togl {bbx:doi}}
@@ -2078,7 +2209,6 @@
        {\usebibmacro{url+urldate}%
         \setunit{\addspace}}}
     {\printfield{doi}%
-     \renewcommand*{\finentrypunct}{\relax}%
      \setunit{\addspace}}}
 
 \renewbibmacro*{url+urldate}{%
@@ -2086,18 +2216,9 @@
     {}
     {\iffieldundef{urlyear}
       {}
-      {\bibstring{retrieved}%
-       \setunit{\addspace}%
-       \printurldate
-       \setunit{\urldatecomma}%
-       \bibstring{from}%
+      {\printurldate
        \setunit{\addspace}}%
-     \iffieldundef{url}{}{\printfield{url}\renewcommand*{\finentrypunct}{\relax}}}}
-
-\DeclareFieldFormat{doi}{%
-  \ifhyperref
-    {\href{https://doi.org/#1}{\nolinkurl{https://doi.org/#1}}}
-    {\nolinkurl{https://doi.org/#1}}}
+     \printfield{url}}}
 
 \newbibmacro*{location+publisher}{%
   \printlist{location}%

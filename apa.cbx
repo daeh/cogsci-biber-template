@@ -1,5 +1,3 @@
-%% Copyright 2022 Philip Kime
-%%
 %% This work may be distributed and/or modified under the
 %% conditions of the LaTeX Project Public License, either version 1.3
 %% of this license or (at your option) any later version.
@@ -12,7 +10,7 @@
 %%
 %% The Current Maintainer of this work is Philip Kime.
 
-\ProvidesFile{apa.cbx}[2021/12/24\space v9.15\space APA biblatex citation style]
+\ProvidesFile{apa.cbx}[2025/08/27\space v9.20\space APA biblatex citation style]
 \RequireBiber[3]
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -43,9 +41,29 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% (APA 8.17) - Ampersand between names in both parenthetical
+%              and narrative citations when in tables
+\newif\ifintable
+
+\DeclareDelimFormat[textcite]{finalnamedelim}{%
+  \ifintable
+    \ifnum\value{liststop}>2 \finalandcomma\fi\addspace\&\space
+  \else
+    \ifnum\value{liststop}>2 \finalandcomma\fi\addspace\bibstring{and}\space
+  \fi}
+
+\AddToHook{env/table/begin}{\intabletrue}
+\AddToHook{env/figure/begin}{\intabletrue}
+\AddToHook{cmd/@makecaption/before}{\intablefalse}
+
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % (APA 8.10) Suffices are not shown in citations
-% (APA 8.17) 3+ authors have "et al."
 % (APA 8.20) Initials only for primary author and only when not unique across all *primary* authors
 
 \newbibmacro*{labelname:doname}[8]{%
@@ -118,12 +136,12 @@
 \def\citeresetapa{\global\let\cbx@apa@names\@empty}
 \citeresetapa
 \def\cbx@apa@ifnamesaved{%
-  \xifinlist{\thefield{fullhash}}{\cbx@apa@names}
+  \xifinlist{\thefield{namehash}}{\cbx@apa@names}
     {\@firstoftwo}
     {\@secondoftwo}}
 
 \newbibmacro*{cite:author}{%
-  \iffieldequals{fullhash}{\cbx@lasthash}
+  \iffieldequals{namehash}{\cbx@lasthash}
 % Multiple cites in one command
    {\setunit{\compcitedelim}%
     \usebibmacro{cite:plabelyear+extradate}}%
@@ -131,7 +149,7 @@
    {\ifnameundef{labelname}
 % No author/editor
      {\usebibmacro{cite:noname}%
-       \savefield{fullhash}{\cbx@lasthash}}
+       \savefield{namehash}{\cbx@lasthash}}
 % Normal cite
      {\ifnameundef{shortauthor}
        {\printnames{labelname}}%
@@ -139,20 +157,11 @@
           {\printnames{shortauthor}}
           {\printnames[labelname]{author}%
            \addspace\printnames[sabrackets]{shortauthor}}}%
-        \savefield{fullhash}{\cbx@lasthash}}}%
+        \savefield{namehash}{\cbx@lasthash}}}%
    \setunit{\multicitedelim}}
 
-% Using fullhash instead of namehash otherwise we may omit namelist for
-% lists which are equal only because of minnames truncation i.e:
-%
-% X and Y and Z (2009)
-% X and W and V (2010)
-%
-% which have the same namehash due to minnames visibility truncation to 1
-% would be printed incorrectly as
-% \cite{one, two} -> X, Y & Z 2009, 2010
 \newbibmacro*{cite}{%
-  \iffieldequals{fullhash}{\cbx@lasthash}
+  \iffieldequals{namehash}{\cbx@lasthash}
 % Multiple cites in one command
    {\setunit{\compcitedelim}%
     \usebibmacro{cite:plabelyear+extradate}}%
@@ -162,7 +171,7 @@
      {\usebibmacro{cite:noname}%
        \setunit{\printdelim{nameyeardelim}}%
        \usebibmacro{cite:plabelyear+extradate}%
-       \savefield{fullhash}{\cbx@lasthash}}
+       \savefield{namehash}{\cbx@lasthash}}
 % Normal cite
      {\ifnameundef{shortauthor}
        {\printnames{labelname}}%
@@ -172,14 +181,14 @@
           \addspace\printnames[sabrackets]{shortauthor}}}%
        \setunit{\printdelim{nameyeardelim}}%
       \usebibmacro{cite:plabelyear+extradate}%
-      \savefield{fullhash}{\cbx@lasthash}}}%
+      \savefield{namehash}{\cbx@lasthash}}}%
    \setunit{\multicitedelim}}
 
 \renewcommand*{\iffinalcitedelim}{%
   \ifnumequal{\value{textcitecount}}{\value{textcitetotal}-1}}
 
 \newbibmacro*{textcite}{%
-  \iffieldequals{fullhash}{\cbx@lasthash}
+  \iffieldequals{namehash}{\cbx@lasthash}
 % Compact cite - more than one thing for same author
     {\setunit{\compcitedelim}%
      \usebibmacro{cite:plabelyear+extradate}}
@@ -226,7 +235,7 @@
   % Actual year printing
         \usebibmacro{cite:plabelyear+extradate}%
   % Save name hash for checks later
-        \savefield{fullhash}{\cbx@lasthash}}%
+        \savefield{namehash}{\cbx@lasthash}}%
     \stepcounter{textcitecount}}}
 
 \newbibmacro*{cite:plabelyear+extradate}{%
@@ -236,6 +245,8 @@
         \clearfield{labelday}% don't want days in citations
         \clearfield{labelendmonth}% don't want months in citations
         \clearfield{labelendday}% don't want days in citations
+        \clearfield{labelyeardivision}% don't want yeardivisions in citations
+        \clearfield{labelendyeardivision}% don't want yeardivisions in citations
         \iffieldsequal{labelyear}{labelendyear}% Don't want no-op year ranges
           {\clearfield{labelendyear}}
           {}%
@@ -266,7 +277,7 @@
 % (APA 11) Bizarre and special rules for legal information
 
 \DeclareFieldFormat{citetitle}{\mkbibquote{#1}}
-\DeclareFieldFormat[book,manual,report,preiodical,legmaterial,jurisdiction]{citetitle}{\mkbibemph{#1}}
+\DeclareFieldFormat[book,manual,report,periodical,legmaterial,jurisdiction,video]{citetitle}{\mkbibemph{#1}}
 \DeclareFieldFormat[legislation,legadminmaterial,legal]{citetitle}{#1}
 
 \newbibmacro*{cite:noname}{%
@@ -364,11 +375,11 @@
 \newbibmacro*{citeyear}{%
   \iffieldundef{labelyear}
     {\usebibmacro{cite:init}}
-    {\iffieldequals{fullhash}{\cbx@lasthash}
+    {\iffieldequals{namehash}{\cbx@lasthash}
        {\setunit{\compcitedelim}%
         \usebibmacro{cite:plabelyear+extradate}}
        {\usebibmacro{cite:plabelyear+extradate}%
-        \savefield{fullhash}{\cbx@lasthash}}}%
+        \savefield{namehash}{\cbx@lasthash}}}%
   \setunit{\multicitedelim}}
 
 %
@@ -386,7 +397,7 @@
   {\usebibmacro{prenote}}
   {\usedriver
     {\DeclareNameAlias{sortname}{default}%
-      \global\boolfalse{bbx:in}%
+      \global\boolfalse{bbx@in}%
       \global\let\blx@related@loop\@empty}
     {\thefield{entrytype}}%
    \usebibmacro{cite:post}}
@@ -401,7 +412,7 @@
      \setlength{\parsep}{\bibparsep}}\item}
   {\usedriver
     {\DeclareNameAlias{sortname}{default}%
-      \global\boolfalse{bbx:in}}
+      \global\boolfalse{bbx@in}}
     {\thefield{entrytype}}%
    \finentry
    \usebibmacro{cite:post}}
@@ -424,9 +435,9 @@
   \global\undef\cbx@lasthash}
 
 \newbibmacro*{cite:post}{%
-  \xifinlist{\thefield{fullhash}}{\cbx@apa@names}
+  \xifinlist{\thefield{namehash}}{\cbx@apa@names}
     {}
-    {\listxadd{\cbx@apa@names}{\thefield{fullhash}}}}
+    {\listxadd{\cbx@apa@names}{\thefield{namehash}}}}
 
 \newbibmacro*{cite:labelyear}{%
   \printfield{labelyear}}
@@ -515,7 +526,8 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % (APA 8.11) No parens round year for cites when the cite is in
-%            parentheses. Use new command \nptextcite for such cites.
+%            parentheses. Use new command \nptextcite for such cites
+%            unless using luatex which does it automatically
 
 \DeclareDelimAlias[nptextcite]{finalnamedelim}[parencite]{finalnamedelim}
 
@@ -627,5 +639,13 @@
 
 \let\cbx@textcites@init\cbx@textcite@init
 \pretocmd{\cbx@textcites@init}{\UseNextMultiCiteHook}{}{}
+
+\ifdef\luatexversion
+  {\directlua{require'apa'}%
+   \glet\textcitei\textcite
+   \glet\parencitei\parencite
+   \gdef\textcite{\BLTXAPAifInParensTF{\nptextcite}{\textcitei}}%
+   \gdef\parencite{\BLTXAPAifInParensTF{\nptextcite}{\parencitei}}}
+  {}
 
 \endinput
